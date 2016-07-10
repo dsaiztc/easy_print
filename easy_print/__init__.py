@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from sys import stdout
 
 # http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
@@ -11,13 +13,29 @@ colors = {
     'bold': '\033[1m',
     'underline': '\033[4m'
 }
+colors['red'] = colors['fail']
+colors['green'] = colors['okgreen']
+colors['blue'] = colors['okblue']
+colors['purple'] = colors['header']
+colors['yellow'] = colors['warning']
 
-def eprint(text, newline=False, color=None):
-    stdout.write(''.join(['\r', ' ' * 100])
-    if color is not None:
-        stdout.write('\r' + colors[color] + text + colors['endc'])
-    else:
-        stdout.write('\r' + text)
+def eprint(text, stay=False, color=None):
+    stdout.write('\r' + ' ' * 64)
+    stdout.write('\r{text}\r'.format(
+        text=colors[color] + str(text) + colors['endc'] if color else str(text)
+    ))
     stdout.flush()
-    if newline:
+    if stay:
         stdout.write('\n')
+        stdout.flush()
+
+def eprogress(progress=0, total=100, width=64, color=None):
+    n_completed = int(progress * width / float(total))
+    completed = '█' * n_completed
+    to_complete = '-' * (width - n_completed)
+    text = '{completed}{to_complete} {percentage}'.format(
+        completed=completed,
+        to_complete=to_complete,
+        percentage='{num} %'.format(num=round(progress * 100 / float(total), 2))
+    )
+    eprint(text=text, color=color)
