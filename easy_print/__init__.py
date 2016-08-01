@@ -29,13 +29,14 @@ def eprint(text, stay=False, color=None):
         stdout.write('\n')
         stdout.flush()
 
-def eprogress(progress=0, total=100, width=64, color=None):
+def eprogress(progress=0, total=100, text=None, width=64, color=None):
     n_completed = int(progress * width / float(total))
     completed = '█' * n_completed
     to_complete = '-' * (width - n_completed)
-    text = '{completed}{to_complete} {percentage}'.format(
+    text = '{text}{completed}{to_complete} {percentage}'.format(
+        text=text + ' ' if text else '',
         completed=completed,
         to_complete=to_complete,
         percentage='{num} %'.format(num=round(progress * 100 / float(total), 2))
     )
-    eprint(text=text, color=color)
+    eprint(text=text, color=color, stay=progress==total)
